@@ -196,3 +196,17 @@ test('non-null client vector is never overwritten by auto-embed', async () => {
   const vec = Array.from((await import('../vectors.js')).decodeVector(row[2], 3));
   assert.ok(Math.abs(vec[0] - 0.5) < 1e-6);
 });
+
+test('tables with reserved-word names are usable', async () => {
+  const db = emptyDb();
+  await executeQuery(db, 'CREATE TABLE total (id INT, amount FLOAT)');
+  await executeQuery(db, 'INSERT INTO total VALUES (1, 9.5)');
+  const res = await executeQuery(db, 'SELECT id, amount FROM total');
+  assert.deepEqual(res.rows, [[1, 9.5]]);
+});
+
+test(':: casts are not treated as named parameters', async () => {
+  const res = await executeQuery(sampleDb(),
+    "SELECT id::INT AS i FROM clients WHERE id = :id", { id: 1 });
+  assert.deepEqual(res.rows, [[1]]);
+});

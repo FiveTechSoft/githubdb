@@ -70,7 +70,7 @@ function quoteReservedIdentifiers(sql) {
 // Convert :name parameters to alasql positional '?', skipping string literals.
 function namedToPositional(sql, params) {
   const values = [];
-  const out = sql.replace(/'(?:[^']|'')*'|:(\w+)/g, (match, name) => {
+  const out = sql.replace(/'(?:[^']|'')*'|::|:(\w+)/g, (match, name) => {
     if (name === undefined) return match; // quoted string: untouched
     if (!(name in params)) throw new Error(`Missing parameter :${name}`);
     values.push(params[name]);
@@ -177,7 +177,7 @@ const MODIFYING_RE = /^\s*(INSERT|UPDATE|DELETE)\b/i;
 async function runDml(db, sql, params, options) {
   const adb = new alasql.Database();
   for (const [tname, table] of Object.entries(db.tables)) {
-    adb.exec(`CREATE TABLE ${tname}`);
+    adb.exec(`CREATE TABLE [${tname}]`);
     adb.tables[tname].data = table.rows.map(r => rowToObject(table.columns, r));
   }
 
