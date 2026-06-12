@@ -27,7 +27,7 @@ jobs:
       - name: Cache embedding model
         uses: actions/cache@v4
         with:
-          path: ~/.cache/huggingface
+          path: .model-cache
           key: githubdb-model-multilingual-e5-small
 
       - name: Install engine
@@ -36,7 +36,8 @@ jobs:
       - name: Execute query and push (retry on race)
         env:
           GITHUBDB_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
-          HF_HOME: ~/.cache/huggingface
+          GITHUBDB_MODEL_CACHE: ${{ github.workspace }}/.model-cache
+          QUERY_ID: ${{ github.event.client_payload.id }}
         run: |
           git config user.name "githubDB"
           git config user.email "githubdb@users.noreply.github.com"
@@ -46,7 +47,7 @@ jobs:
             if git diff --cached --quiet; then
               echo "No changes to commit"; exit 0
             fi
-            git commit -m "githubDB query ${{ github.event.client_payload.id }}"
+            git commit -m "githubDB query $QUERY_ID"
             if git push; then
               exit 0
             fi

@@ -8,7 +8,10 @@ let pipePromise;
 
 async function getPipe() {
   pipePromise ??= (async () => {
-    const { pipeline } = await import('@huggingface/transformers');
+    const { pipeline, env } = await import('@huggingface/transformers');
+    if (process.env.GITHUBDB_MODEL_CACHE) {
+      env.cacheDir = process.env.GITHUBDB_MODEL_CACHE;
+    }
     return pipeline('feature-extraction', 'Xenova/multilingual-e5-small');
   })();
   return pipePromise;
