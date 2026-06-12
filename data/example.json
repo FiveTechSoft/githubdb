@@ -3,23 +3,55 @@
  "tables": {
   "clients": {
    "columns": [
-    { "name": "id", "type": "INT" },
-    { "name": "name", "type": "TEXT" },
-    { "name": "email", "type": "TEXT" }
+    {
+     "name": "id",
+     "type": "INT"
+    },
+    {
+     "name": "name",
+     "type": "TEXT"
+    },
+    {
+     "name": "email",
+     "type": "TEXT"
+    }
    ],
    "rows": [
-    [1, "Ana", "ana@mail.com"],
-    [2, "Luis", "luis@mail.com"]
+    [
+     1,
+     "Ana",
+     "ana@mail.com"
+    ],
+    [
+     2,
+     "Luis",
+     "luis@mail.com"
+    ]
    ]
   },
   "docs": {
    "columns": [
-    { "name": "id", "type": "INT" },
-    { "name": "texto", "type": "TEXT" },
-    { "name": "embedding", "type": "VECTOR(384)" }
+    {
+     "name": "id",
+     "type": "INT"
+    },
+    {
+     "name": "texto",
+     "type": "TEXT"
+    },
+    {
+     "name": "embedding",
+     "type": "VECTOR(384)"
+    }
    ],
    "embed_from": "texto",
-   "rows": []
+   "rows": [
+    [
+     1,
+     "Como configurar el servidor SMTP para enviar correo",
+     "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"
+    ]
+   ]
   }
  }
 }
