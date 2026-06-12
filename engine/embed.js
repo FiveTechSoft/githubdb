@@ -2,6 +2,8 @@
 // Local embeddings with multilingual-e5-small (384 dims) via transformers.js.
 // e5 models expect 'query: ' / 'passage: ' prefixes for asymmetric retrieval.
 
+// Note: if the first pipeline load rejects, the rejection stays cached for the
+// process lifetime. Acceptable here: the engine runs as a one-shot Action process.
 let pipePromise;
 
 async function getPipe() {

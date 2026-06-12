@@ -44,6 +44,11 @@ export async function runQuery(payload, { dataDir, resultsDir, embedFns } = {}) 
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const payload = JSON.parse(process.env.GITHUBDB_PAYLOAD ?? '{}');
-  await runQuery(payload, { dataDir: 'data', resultsDir: 'results' });
+  try {
+    const payload = JSON.parse(process.env.GITHUBDB_PAYLOAD ?? '{}');
+    await runQuery(payload, { dataDir: 'data', resultsDir: 'results' });
+  } catch (e) {
+    console.error('githubDB: fatal:', e);
+    process.exit(1);
+  }
 }
