@@ -47,12 +47,12 @@ export class Table {
    */
   async search(query, { limit = 10, where = null } = {}) {
     // Find VECTOR column
-    const vecColIdx = this.columns.findIndex(c => VECTOR_COL_RE.test(c.name));
+    const vecColIdx = this.columns.findIndex(c => VECTOR_COL_RE.test(c.type));
     if (vecColIdx === -1) {
       throw new Error(`Table '${this.name}' has no VECTOR column`);
     }
 
-    const match = VECTOR_COL_RE.exec(this.columns[vecColIdx].name);
+    const match = VECTOR_COL_RE.exec(this.columns[vecColIdx].type);
     const expectedDims = parseInt(match[1], 10);
 
     // Resolve query vector

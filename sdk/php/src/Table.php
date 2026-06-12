@@ -11,6 +11,10 @@ class Table
     private array $rowList;
     private string $name;
     private $embedder;
+    /** @var string[] Column names, in order. */
+    private array $colNames = [];
+    /** @var string[] Column types, in order. */
+    private array $colTypes = [];
 
     /**
      * @param string        $name     Table name.
@@ -28,6 +32,17 @@ class Table
         $this->columnList = $columns;
         $this->rowList = $rows;
         $this->embedder = $embedder;
+        // githubDB column definitions are objects {name, type}; plain strings
+        // are accepted too (treated as both name and type).
+        foreach ($columns as $col) {
+            if (is_array($col)) {
+                $this->colNames[] = (string) ($col['name'] ?? '');
+                $this->colTypes[] = (string) ($col['type'] ?? '');
+            } else {
+                $this->colNames[] = (string) $col;
+                $this->colTypes[] = (string) $col;
+            }
+        }
     }
 
     /**
@@ -56,8 +71,8 @@ class Table
         $result = [];
         foreach ($this->rowList as $row) {
             $obj = [];
-            foreach ($this->columnList as $i => $col) {
-                $obj[$col] = $row[$i] ?? null;
+            foreach ($this->colNames as $i => $colName) {
+                $obj[$colName] = $row[$i] ?? null;
             }
             $result[] = $obj;
         }
@@ -79,11 +94,11 @@ class Table
         $vectorDims = null;
         $vectorColName = null;
 
-        foreach ($this->columnList as $i => $col) {
-            if (preg_match('/^VECTOR\((\d+)\)$/', $col, $m)) {
+        foreach ($this->colTypes as $i => $colType) {
+            if (preg_match('/^VECTOR\((\d+)\)$/', $colType, $m)) {
                 $vectorColIndex = $i;
                 $vectorDims = (int)$m[1];
-                $vectorColName = $col;
+                $vectorColName = $this->colNames[$i];
                 break;
             }
         }
@@ -100,8 +115,8 @@ class Table
         foreach ($this->rowList as $rowIndex => $row) {
             // Build assoc row
             $obj = [];
-            foreach ($this->columnList as $i => $col) {
-                $obj[$col] = $row[$i] ?? null;
+            foreach ($this->colNames as $i => $colName) {
+                $obj[$colName] = $row[$i] ?? null;
             }
 
             // Apply prefilter
@@ -175,6 +190,12 @@ class Table
             return $vec;
         }
 
-        return Embedder::embed($query);
+        $vec = Embedder::embed($query);
+        if (count($vec) !== $dims) {
+            throw new GithubDBException(
+                "Vector dimension mismatch: expected {$dims}, got " . count($vec)
+            );
+        }
+        return $vec;
     }
 }

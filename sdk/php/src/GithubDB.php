@@ -55,15 +55,9 @@ class GithubDB
     {
         $data = $this->loadDb($db);
 
-        // Find table
+        // Tables are keyed by name in the githubDB format.
         $tables = $data['tables'] ?? [];
-        $tableData = null;
-        foreach ($tables as $t) {
-            if ($t['name'] === $name) {
-                $tableData = $t;
-                break;
-            }
-        }
+        $tableData = $tables[$name] ?? null;
 
         if ($tableData === null) {
             throw new GithubDBException("Table '{$name}' not found in database '{$db}'");

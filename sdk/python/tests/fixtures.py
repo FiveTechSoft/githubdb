@@ -1,6 +1,8 @@
 """
 Shared fixture data for githubdb_sdk tests.
 All returned as dicts/JSON bytes to be fed to fake transports.
+Format mirrors the real githubDB layout: `tables` is a dict keyed by table
+name; shards are plain filenames under data/.
 """
 import json
 from githubdb_sdk.vectors import encode_vector
@@ -11,9 +13,8 @@ from githubdb_sdk.vectors import encode_vector
 
 SIMPLE_DB = {
     "githubdb": 1,
-    "tables": [
-        {
-            "name": "users",
+    "tables": {
+        "users": {
             "columns": [
                 {"name": "id", "type": "INTEGER"},
                 {"name": "name", "type": "TEXT"},
@@ -23,7 +24,7 @@ SIMPLE_DB = {
                 [2, "Bob"],
             ],
         }
-    ],
+    },
 }
 
 SIMPLE_DB_BYTES = json.dumps(SIMPLE_DB).encode("utf-8")
@@ -34,9 +35,8 @@ SIMPLE_DB_BYTES = json.dumps(SIMPLE_DB).encode("utf-8")
 
 SHARD_DB = {
     "githubdb": 1,
-    "tables": [
-        {
-            "name": "items",
+    "tables": {
+        "items": {
             "columns": [
                 {"name": "id", "type": "INTEGER"},
                 {"name": "label", "type": "TEXT"},
@@ -46,17 +46,21 @@ SHARD_DB = {
                 [2, "inline-b"],
             ],
             "shards": [
-                "https://raw.githubusercontent.com/owner/repo/main/data/shards/items_1.json",
-                "https://raw.githubusercontent.com/owner/repo/main/data/shards/items_2.json",
+                "items_1.json",
+                "items_2.json",
             ],
         }
-    ],
+    },
 }
 
 SHARD_DB_BYTES = json.dumps(SHARD_DB).encode("utf-8")
 
-SHARD_1 = {"rows": [[3, "shard1-a"], [4, "shard1-b"]]}
-SHARD_2 = {"rows": [[5, "shard2-a"]]}
+# URLs the SDK is expected to request for the shards above (no token).
+SHARD_1_URL = "https://raw.githubusercontent.com/owner/repo/main/data/items_1.json"
+SHARD_2_URL = "https://raw.githubusercontent.com/owner/repo/main/data/items_2.json"
+
+SHARD_1 = {"table": "items", "rows": [[3, "shard1-a"], [4, "shard1-b"]]}
+SHARD_2 = {"table": "items", "rows": [[5, "shard2-a"]]}
 
 SHARD_1_BYTES = json.dumps(SHARD_1).encode("utf-8")
 SHARD_2_BYTES = json.dumps(SHARD_2).encode("utf-8")
@@ -71,9 +75,8 @@ VEC_C = [0.5, 0.5, 0.0]  # cosine to VEC_A = 1/sqrt(2) ~0.707, to VEC_B ~0.707
 
 VECTOR_DB = {
     "githubdb": 1,
-    "tables": [
-        {
-            "name": "docs",
+    "tables": {
+        "docs": {
             "columns": [
                 {"name": "id", "type": "INTEGER"},
                 {"name": "text", "type": "TEXT"},
@@ -87,7 +90,7 @@ VECTOR_DB = {
                 [4, "doc-d", None, "cat2"],           # null vector — must be skipped
             ],
         }
-    ],
+    },
 }
 
 VECTOR_DB_BYTES = json.dumps(VECTOR_DB).encode("utf-8")

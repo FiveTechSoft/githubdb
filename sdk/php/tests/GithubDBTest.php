@@ -19,9 +19,11 @@ class GithubDBTest extends TestCase
         return [
             'githubdb' => 1,
             'tables' => [
-                [
-                    'name' => 'users',
-                    'columns' => ['id', 'name'],
+                'users' => [
+                    'columns' => [
+                        ['name' => 'id', 'type' => 'INT'],
+                        ['name' => 'name', 'type' => 'TEXT'],
+                    ],
                     'rows' => [
                         [1, 'Alice'],
                         [2, 'Bob'],
@@ -40,9 +42,11 @@ class GithubDBTest extends TestCase
         return [
             'githubdb' => 1,
             'tables' => [
-                [
-                    'name' => 'items',
-                    'columns' => ['id', 'value'],
+                'items' => [
+                    'columns' => [
+                        ['name' => 'id', 'type' => 'INT'],
+                        ['name' => 'value', 'type' => 'TEXT'],
+                    ],
                     'rows' => [
                         [1, 'inline-1'],
                         [2, 'inline-2'],
@@ -102,7 +106,10 @@ class GithubDBTest extends TestCase
         $gdb = new GithubDB('testowner', httpClient: $client);
         $table = $gdb->table('mydb', 'users');
 
-        $this->assertSame(['id', 'name'], $table->columns());
+        $this->assertSame([
+            ['name' => 'id', 'type' => 'INT'],
+            ['name' => 'name', 'type' => 'TEXT'],
+        ], $table->columns());
         $this->assertSame([[1, 'Alice'], [2, 'Bob']], $table->rows());
     }
 

@@ -85,16 +85,17 @@ class GithubDB:
             GithubDBError: if the database or table is not found.
         """
         db_data = self._load_db(db)
-        tables = {t["name"]: t for t in db_data.get("tables", [])}
+        tables = db_data.get("tables", {})
         if name not in tables:
             raise GithubDBError(f"Table '{name}' not found in database '{db}'")
         tbl = tables[name]
         columns = tbl.get("columns", [])
         rows = list(tbl.get("rows", []))
 
-        # Merge shards (sequential is fine per spec)
-        for shard_url in tbl.get("shards", []):
-            shard_data = self._fetch_json_url(shard_url)
+        # Merge shards (sequential is fine per spec); shards are filenames
+        # under data/, e.g. "example.001.json".
+        for shard_file in tbl.get("shards", []):
+            shard_data = self._fetch_data_file(shard_file)
             rows.extend(shard_data.get("rows", []))
 
         return Table(name, db, columns, rows, embedder=self._embedder)
@@ -234,9 +235,24 @@ class GithubDB:
             )
         return data
 
-    def _fetch_json_url(self, url: str) -> dict:
-        """Fetch arbitrary JSON URL (used for shards)."""
-        status, body = self._transport("GET", url, {}, None)
+    def _fetch_data_file(self, filename: str) -> dict:
+        """Fetch a JSON file under data/ (used for shards), honoring the token."""
+        if self._token:
+            url = (
+                f"https://api.github.com/repos/{self._owner}/{self._repo}/"
+                f"contents/data/{filename}?ref={self._branch}"
+            )
+            headers = {
+                "Accept": "application/vnd.github.raw+json",
+                "Authorization": f"Bearer {self._token}",
+            }
+        else:
+            url = (
+                f"https://raw.githubusercontent.com/{self._owner}/{self._repo}/"
+                f"{self._branch}/data/{filename}"
+            )
+            headers = {}
+        status, body = self._transport("GET", url, headers, None)
         if status != 200:
-            raise GithubDBError(f"Failed to fetch shard (HTTP {status}): {url}")
+            raise GithubDBError(f"Failed to fetch shard (HTTP {status}): data/{filename}")
         return json.loads(body)

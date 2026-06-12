@@ -35,6 +35,32 @@ class TableTest extends TestCase
         return new Table('items', $columns, $rows, $embedder);
     }
 
+    /**
+     * Regression: real githubDB column format is objects {name, type},
+     * not plain strings. search() must detect VECTOR(n) in the TYPE and
+     * objects() must key rows by NAME.
+     */
+    public function testRealColumnObjectFormat(): void
+    {
+        $columns = [
+            ['name' => 'id', 'type' => 'INT'],
+            ['name' => 'texto', 'type' => 'TEXT'],
+            ['name' => 'embedding', 'type' => 'VECTOR(3)'],
+        ];
+        $rows = [
+            [1, 'norte', Vectors::encode([1.0, 0.0, 0.0])],
+            [2, 'este',  Vectors::encode([0.0, 1.0, 0.0])],
+        ];
+        $t = new Table('docs', $columns, $rows);
+
+        $objs = $t->objects();
+        $this->assertSame(['id' => 1, 'texto' => 'norte', 'embedding' => $rows[0][2]], $objs[0]);
+
+        $hits = $t->search([1.0, 0.0, 0.0], limit: 1);
+        $this->assertSame(1, $hits[0]['row']['id']);
+        $this->assertEqualsWithDelta(1.0, $hits[0]['score'], 1e-6);
+    }
+
     private function makeNoVectorTable(): Table
     {
         $columns = ['id', 'name'];

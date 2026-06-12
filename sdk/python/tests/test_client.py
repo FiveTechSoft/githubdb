@@ -123,8 +123,8 @@ class TestTableNotFound:
 # ---------------------------------------------------------------------------
 
 SHARD_DB_URL = "https://raw.githubusercontent.com/owner/repo/main/data/mydb.json"
-SHARD_1_URL = "https://raw.githubusercontent.com/owner/repo/main/data/shards/items_1.json"
-SHARD_2_URL = "https://raw.githubusercontent.com/owner/repo/main/data/shards/items_2.json"
+SHARD_1_URL = "https://raw.githubusercontent.com/owner/repo/main/data/items_1.json"
+SHARD_2_URL = "https://raw.githubusercontent.com/owner/repo/main/data/items_2.json"
 
 
 class TestShardMerge:

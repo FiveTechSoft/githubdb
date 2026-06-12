@@ -20,7 +20,7 @@ function makeVectorDB(extraRows = []) {
     tables: {
       plants: {
         columns: [
-          { name: 'VECTOR(3)', type: 'BLOB' },
+          { name: 'embedding', type: 'VECTOR(3)' },
           { name: 'name', type: 'TEXT' },
           { name: 'score_hint', type: 'REAL' }
         ],
