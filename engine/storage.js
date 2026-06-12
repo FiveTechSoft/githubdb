@@ -102,3 +102,21 @@ export async function saveDatabase(dataDir, name, db, opts = {}) {
   }
   return written;
 }
+
+export async function writeResult(resultsDir, id, result) {
+  await writeFile(join(resultsDir, `${id}.json`),
+    JSON.stringify({ ...result, ts: new Date().toISOString() }, null, 1));
+}
+
+export async function cleanupResults(resultsDir, maxAgeMs) {
+  const now = Date.now();
+  for (const f of await readdir(resultsDir)) {
+    if (!f.endsWith('.json')) continue;
+    try {
+      const { ts } = JSON.parse(await readFile(join(resultsDir, f), 'utf8'));
+      if (ts && now - Date.parse(ts) > maxAgeMs) await unlink(join(resultsDir, f));
+    } catch {
+      // unreadable result file: leave it, never crash the run
+    }
+  }
+}
