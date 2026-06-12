@@ -48,3 +48,42 @@ test('loadDatabase rejects unknown format version', async () => {
   await writeFile(join(dir, 'bad.json'), JSON.stringify({ githubdb: 99, tables: {} }));
   await assert.rejects(loadDatabase(dir, 'bad'), /format version/i);
 });
+
+test('saveDatabase writes single file when small', async () => {
+  const files = await saveDatabase(dir, 'mydb', baseDb());
+  assert.deepEqual(files, ['mydb.json']);
+  const saved = JSON.parse(await readFile(join(dir, 'mydb.json'), 'utf8'));
+  assert.equal(saved.tables.clients.rows.length, 2);
+  assert.equal(saved.tables.clients.shards, undefined);
+});
+
+test('saveDatabase shards a table that exceeds the threshold', async () => {
+  const db = baseDb();
+  // ~30 rows of ~40 bytes each; threshold 400 bytes forces sharding
+  db.tables.clients.rows = Array.from({ length: 30 }, (_, i) => [i, 'x'.repeat(20)]);
+  const files = await saveDatabase(dir, 'mydb', db, { shardThreshold: 400 });
+  assert.ok(files.length > 1, `expected shards, got ${files}`);
+  const base = JSON.parse(await readFile(join(dir, 'mydb.json'), 'utf8'));
+  assert.ok(base.tables.clients.shards.length >= 1);
+  assert.equal(base.tables.clients.rows.length, 0);
+  // every shard file stays under the threshold
+  for (const f of base.tables.clients.shards) {
+    const stat = (await readFile(join(dir, f), 'utf8')).length;
+    assert.ok(stat <= 400, `${f} is ${stat} bytes`);
+  }
+  // round-trip: loading returns all 30 rows in order
+  const loaded = await loadDatabase(dir, 'mydb');
+  assert.equal(loaded.tables.clients.rows.length, 30);
+  assert.deepEqual(loaded.tables.clients.rows[29][0], 29);
+});
+
+test('saveDatabase removes stale shard files when data shrinks', async () => {
+  const db = baseDb();
+  db.tables.clients.rows = Array.from({ length: 30 }, (_, i) => [i, 'x'.repeat(20)]);
+  await saveDatabase(dir, 'mydb', db, { shardThreshold: 400 });
+  const small = baseDb(); // back to 2 rows
+  const files = await saveDatabase(dir, 'mydb', small, { shardThreshold: 400 });
+  assert.deepEqual(files, ['mydb.json']);
+  const names = await readdir(dir);
+  assert.ok(!names.some(n => /mydb\.\d{3}\.json/.test(n)), `stale shards: ${names}`);
+});
