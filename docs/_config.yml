@@ -1,0 +1,6 @@
+title: githubDB
+description: A SQL + vector database that lives entirely in a GitHub repository. Fork it, and you have your own free database.
+theme: jekyll-theme-cayman
+show_downloads: false
+exclude:
+  - superpowers/
