@@ -4,7 +4,7 @@
 
 githubDB turns a GitHub repository into a self-contained database system. Every file under `data/` is a database. The SQL engine runs inside GitHub Actions on your own fork — no servers, no hosting, no cost. Any language that can speak HTTP and JSON can use it.
 
-> **Status: under development.** The design is complete; the engine is being implemented.
+> **Status: working preview.** The engine is functional and verified end-to-end — fork and try it. APIs may still change before 1.0.
 
 ## Contents
 

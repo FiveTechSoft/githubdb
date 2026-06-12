@@ -12,7 +12,7 @@ ORDER BY score DESC
 LIMIT 10
 ```
 
-> **Status: under development.** The design is complete ([design spec](docs/superpowers/specs/2026-06-12-githubdb-design.md)); the engine is being implemented. Watch the repo for the first release.
+> **Status: working preview.** The engine is functional and verified end-to-end — fork and try it. APIs may still change before 1.0. ([design spec](docs/superpowers/specs/2026-06-12-githubdb-design.md))
 
 **📖 Documentation: [fivetechsoft.github.io/githubdb](https://fivetechsoft.github.io/githubdb/)**
 
