@@ -1,0 +1,27 @@
+// engine/embed.js
+// Local embeddings with multilingual-e5-small (384 dims) via transformers.js.
+// e5 models expect 'query: ' / 'passage: ' prefixes for asymmetric retrieval.
+
+// Note: if the first pipeline load rejects, the rejection stays cached for the
+// process lifetime. Acceptable here: the engine runs as a one-shot Action process.
+let pipePromise;
+
+async function getPipe() {
+  pipePromise ??= (async () => {
+    const { pipeline, env } = await import('@huggingface/transformers');
+    if (process.env.GITHUBDB_MODEL_CACHE) {
+      env.cacheDir = process.env.GITHUBDB_MODEL_CACHE;
+    }
+    return pipeline('feature-extraction', 'Xenova/multilingual-e5-small');
+  })();
+  return pipePromise;
+}
+
+async function embedWithPrefix(prefix, text) {
+  const pipe = await getPipe();
+  const out = await pipe(prefix + text, { pooling: 'mean', normalize: true });
+  return Array.from(out.data);
+}
+
+export const embedPassage = (text) => embedWithPrefix('passage: ', text);
+export const embedQuery = (text) => embedWithPrefix('query: ', text);

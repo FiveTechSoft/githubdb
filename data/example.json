@@ -1,0 +1,25 @@
+{
+ "githubdb": 1,
+ "tables": {
+  "clients": {
+   "columns": [
+    { "name": "id", "type": "INT" },
+    { "name": "name", "type": "TEXT" },
+    { "name": "email", "type": "TEXT" }
+   ],
+   "rows": [
+    [1, "Ana", "ana@mail.com"],
+    [2, "Luis", "luis@mail.com"]
+   ]
+  },
+  "docs": {
+   "columns": [
+    { "name": "id", "type": "INT" },
+    { "name": "texto", "type": "TEXT" },
+    { "name": "embedding", "type": "VECTOR(384)" }
+   ],
+   "embed_from": "texto",
+   "rows": []
+  }
+ }
+}

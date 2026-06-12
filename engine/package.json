@@ -1,0 +1,13 @@
+{
+  "name": "githubdb-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "alasql": "^4.6.0",
+    "@huggingface/transformers": "^3.0.0"
+  }
+}
