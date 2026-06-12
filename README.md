@@ -14,6 +14,8 @@ LIMIT 10
 
 > **Status: under development.** The design is complete ([design spec](docs/superpowers/specs/2026-06-12-githubdb-design.md)); the engine is being implemented. Watch the repo for the first release.
 
+**📖 Documentation: [fivetechsoft.github.io/githubdb](https://fivetechsoft.github.io/githubdb/)**
+
 ## Why githubDB?
 
 - **Fork = install.** Fork this repository and your database is ready. No configuration required.
