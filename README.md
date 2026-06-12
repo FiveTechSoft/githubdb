@@ -146,6 +146,59 @@ This gives AI agents a free, versioned memory with sub-second retrieval and dura
 
 githubDB is ideal for: agent memory, RAG knowledge bases, configuration stores, small-team datasets, prototypes, and any dataset that benefits from version history. It is not a replacement for Postgres.
 
+## Testing
+
+githubDB is tested at four levels. All results below are from real runs (2026-06-12).
+
+### Unit tests — 43 tests
+
+```bash
+npm test --prefix engine
+```
+
+| Module | Coverage |
+|---|---|
+| `vectors.js` | base64-float32 round-trip, dimension validation, cosine/dot/euclidean known values, mismatched lengths |
+| `storage.js` | load with shard merging, missing-database and format-version errors, name validation (path traversal, regex injection), sharding at threshold, shard size limits with long table names, stale-shard cleanup, round-trips |
+| `sql.js` | CREATE/DROP TABLE with `VECTOR(n)`, SELECT/INSERT/UPDATE/DELETE, JOIN + GROUP BY, named parameters (including `:param` inside string literals and `::` casts), reserved-word identifiers, vector functions, dimension validation with rollback, auto-embed, EMBED(), client-vector override |
+| `run-query.js` | result files for success/error paths, data persistence, CREATE-on-missing-database, missing-id no-op, result cleanup by age |
+
+### Stress tests — 18 tests
+
+```bash
+npm run test:stress --prefix engine
+```
+
+Deterministic (seeded PRNG), with independently computed expected values:
+
+| Test | Scale | Observed |
+|---|---|---|
+| Brute-force cosine search, top-10 | 100,000 × 384-dim vectors | 951 ms |
+| Vector encode+decode round-trip | 10,000 × 384 dims | 196 ms |
+| Sharded save+load round-trip | 100,000 rows | 252 ms |
+| 50 tables × 2,000 rows integrity | 100,000 rows | 79 ms |
+| SELECT + WHERE + ORDER BY + LIMIT | 100,000 rows | 70 ms |
+| JOIN + GROUP BY (verified aggregate) | 10k × 10k | 18 ms |
+| 1,000 sequential INSERTs | growing DB | 523 ms |
+| UPDATE hitting 50,000 of 100,000 rows | 100,000 rows | 63 ms |
+| `COSINE_SIM` ORDER BY through SQL | 20,000 × VECTOR(64) | 146 ms |
+
+Plus edge cases: unicode/emoji, quotes and SQL-escaping, `0`/`false`/`''`/`null` round-trips, 100-column tables, 10 KB cells, DROP+CREATE same name, 1,000-file result cleanup.
+
+### End-to-end (real GitHub, this repository)
+
+- `SELECT` via `repository_dispatch` → result file in ~25 s, engine time 24 ms.
+- `INSERT` without a vector → Action auto-embedded with the local model and committed the 384-dim embedding (3.3 s engine time, model cached between runs).
+- Semantic search: `COSINE_SIM(embedding, EMBED('mi correo electrónico no funciona'))` correctly ranked an SMTP-configuration document above an unrelated one.
+
+### Concurrency stress (real GitHub)
+
+5 simultaneous `INSERT`s into the same database:
+
+- **Found a real bug:** the original design used a GitHub Actions concurrency group per database, assuming queued queries wait. In reality GitHub keeps at most 1 running + 1 pending run per group and **cancels** the rest — 3 of 5 queries were silently lost.
+- **Fix:** the concurrency group was removed; runs execute in parallel and serialize through Git (push conflict → pull fresh data → re-execute → push, up to 5 attempts with randomized backoff).
+- **Re-test after the fix: 5/5 runs succeeded, 5/5 rows landed, 0 queries lost.**
+
 ## Repository layout
 
 ```
