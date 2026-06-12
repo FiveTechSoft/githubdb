@@ -12,6 +12,7 @@ githubDB turns a GitHub repository into a self-contained database system. Every 
 - [API reference](api.html) — sending queries and reading results over HTTP
 - [SQL reference](sql-reference.html) — supported statements, types, and parameters
 - [Vector search](vectors.html) — `VECTOR(n)` columns, automatic embeddings, semantic search, fast RAG reads
+- [SDKs](sdk.html) — JavaScript, Python and PHP clients for sub-second reads and local semantic search
 - [Data format](data-format.html) — the JSON database file format and automatic sharding
 - [Limits and concurrency](limits.html) — latency, size limits, consistency guarantees
 

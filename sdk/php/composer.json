@@ -1,0 +1,25 @@
+{
+    "name": "githubdb/sdk",
+    "description": "PHP read SDK for githubDB — reads databases directly from GitHub CDN with optional local embedding",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11"
+    },
+    "suggest": {
+        "codewithkyrian/transformers": "Required for text-based semantic search (search(string $query))"
+    },
+    "autoload": {
+        "psr-4": {
+            "GithubDB\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GithubDB\\Tests\\": "tests/"
+        }
+    }
+}

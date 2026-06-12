@@ -1,0 +1,40 @@
+name: SDK tests
+
+on:
+  push:
+    paths: ['sdk/**', '.github/workflows/sdk-tests.yml']
+  pull_request:
+    paths: ['sdk/**', '.github/workflows/sdk-tests.yml']
+
+jobs:
+  js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test
+        working-directory: sdk/js
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pytest
+      - run: python -m pytest tests -q
+        working-directory: sdk/python
+
+  php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpunit:11
+      - run: phpunit --configuration phpunit.xml
+        working-directory: sdk/php

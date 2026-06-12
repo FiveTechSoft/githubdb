@@ -69,6 +69,10 @@ curl -s "https://raw.githubusercontent.com/YOU/githubdb/main/results/$ID.json"
 
 Ready-to-run client examples for several languages live in [`clients/`](clients/).
 
+## SDKs
+
+Official SDKs for **JavaScript** (Node + browser), **Python** and **PHP** live in [`sdk/`](sdk/). They implement the fast read path — sub-second table reads from the raw CDN and local semantic search (`search('texto', limit: 5)`) with optional local embeddings — plus a `query()` write convenience. See the [SDK documentation](https://fivetechsoft.github.io/githubdb/sdk.html).
+
 ## Data model
 
 One database = one JSON file under `data/`. Human-readable, diff-friendly, hand-editable.
