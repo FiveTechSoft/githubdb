@@ -1,5 +1,11 @@
 // engine/sql.js
 import alasql from 'alasql';
+import { encodeVector, toVector, cosineSim, dotProduct, euclidean } from './vectors.js';
+
+// Register vector functions as alasql user functions.
+alasql.fn.COSINE_SIM = (a, b) => cosineSim(toVector(a), toVector(b));
+alasql.fn.DOT_PRODUCT = (a, b) => dotProduct(toVector(a), toVector(b));
+alasql.fn.EUCLIDEAN = (a, b) => euclidean(toVector(a), toVector(b));
 
 // ---------------------------------------------------------------------------
 // DDL: built-in parser (alasql doesn't know VECTOR(n))
@@ -103,29 +109,105 @@ function fixArrayRows(data, columns) {
 }
 
 // ---------------------------------------------------------------------------
+// Vector helpers
+// ---------------------------------------------------------------------------
+
+function vectorColumns(table) {
+  return table.columns
+    .map((c, i) => ({ ...c, index: i, dims: /^VECTOR\((\d+)\)$/.exec(c.type)?.[1] }))
+    .filter(c => c.dims !== undefined)
+    .map(c => ({ ...c, dims: Number(c.dims) }));
+}
+
+/**
+ * EMBED('literal') is resolved before execution because embedding is async
+ * and alasql functions are synchronous. Only string literals are supported.
+ */
+async function resolveEmbedCalls(sql, params, embedQuery) {
+  const re = /EMBED\(\s*'((?:[^']|'')*)'\s*\)/gi;
+  let i = 0;
+  const jobs = [];
+  const out = sql.replace(re, (_, literal) => {
+    const name = `__embed_${i++}`;
+    jobs.push(async () => {
+      if (!embedQuery) {
+        throw new Error('EMBED() is not available: no embedding function configured');
+      }
+      params[name] = encodeVector(await embedQuery(literal.replace(/''/g, "'")));
+    });
+    return `:${name}`;
+  });
+  for (const job of jobs) await job();
+  return out;
+}
+
+/**
+ * Normalize vector cells after a modifying statement:
+ * arrays -> base64, strings -> dimension-validated, NULL -> auto-embed.
+ */
+async function normalizeVectors(db, embedPassage) {
+  for (const table of Object.values(db.tables)) {
+    const vcols = vectorColumns(table);
+    if (vcols.length === 0) continue;
+    const embedFromIdx = table.embed_from
+      ? table.columns.findIndex(c => c.name === table.embed_from) : -1;
+    for (const row of table.rows) {
+      for (const col of vcols) {
+        const v = row[col.index];
+        if (v === null || v === undefined) {
+          if (embedFromIdx >= 0 && embedPassage && row[embedFromIdx] != null) {
+            row[col.index] = encodeVector(await embedPassage(String(row[embedFromIdx])));
+          }
+        } else if (typeof v === 'string') {
+          toVector(v, col.dims); // validate dims, throws on mismatch
+        } else {
+          row[col.index] = encodeVector(toVector(v, col.dims));
+        }
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // DML/SELECT via alasql
 // ---------------------------------------------------------------------------
 
 const MODIFYING_RE = /^\s*(INSERT|UPDATE|DELETE)\b/i;
 
-async function runDml(db, sql, params, _options) {
+async function runDml(db, sql, params, options) {
   const adb = new alasql.Database();
   for (const [tname, table] of Object.entries(db.tables)) {
     adb.exec(`CREATE TABLE ${tname}`);
     adb.tables[tname].data = table.rows.map(r => rowToObject(table.columns, r));
   }
 
-  const sqlQuoted = quoteReservedIdentifiers(sql);
-  const { sql: positionalSql, values } = namedToPositional(sqlQuoted, params);
+  const effectiveParams = { ...params };
+  const sqlWithEmbeds = await resolveEmbedCalls(sql, effectiveParams, options.embedQuery);
+  const sqlQuoted = quoteReservedIdentifiers(sqlWithEmbeds);
+  const { sql: positionalSql, values } = namedToPositional(sqlQuoted, effectiveParams);
   const modifying = MODIFYING_RE.test(sql);
   const result = adb.exec(positionalSql, values);
 
   if (modifying) {
+    // Snapshot for rollback on validation error
+    const snapshot = JSON.stringify(
+      Object.fromEntries(Object.entries(db.tables).map(([n, t]) => [n, t.rows])));
+
     for (const [tname, table] of Object.entries(db.tables)) {
       // Normalize any array rows that alasql created for INSERT ... VALUES (...)
       const normalizedData = fixArrayRows(adb.tables[tname].data, table.columns);
       table.rows = normalizedData.map(o => objectToRow(table.columns, o));
     }
+
+    try {
+      await normalizeVectors(db, options.embedPassage);
+    } catch (e) {
+      // Restore rows so a validation error leaves data untouched
+      const prev = JSON.parse(snapshot);
+      for (const [tname, rows] of Object.entries(prev)) db.tables[tname].rows = rows;
+      throw e;
+    }
+
     return {
       columns: [],
       rows: [],
