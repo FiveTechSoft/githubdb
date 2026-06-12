@@ -87,3 +87,26 @@ test('saveDatabase removes stale shard files when data shrinks', async () => {
   const names = await readdir(dir);
   assert.ok(!names.some(n => /mydb\.\d{3}\.json/.test(n)), `stale shards: ${names}`);
 });
+
+test('loadDatabase rejects invalid database names', async () => {
+  await assert.rejects(loadDatabase(dir, '../escape'), /Invalid database name/);
+  await assert.rejects(loadDatabase(dir, 'my.db'), /Invalid database name/);
+});
+
+test('saveDatabase rejects invalid database names', async () => {
+  await assert.rejects(saveDatabase(dir, 'a/b', baseDb()), /Invalid database name/);
+});
+
+test('shard files respect threshold with long table names', async () => {
+  const tname = 't'.repeat(120);
+  const db = { githubdb: 1, tables: { [tname]: {
+    columns: [{ name: 'id', type: 'INT' }, { name: 'v', type: 'TEXT' }],
+    rows: Array.from({ length: 20 }, (_, i) => [i, 'y'.repeat(30)])
+  } } };
+  await saveDatabase(dir, 'mydb', db, { shardThreshold: 450 });
+  const base = JSON.parse(await readFile(join(dir, 'mydb.json'), 'utf8'));
+  for (const f of base.tables[tname].shards) {
+    const size = (await readFile(join(dir, f), 'utf8')).length;
+    assert.ok(size <= 450, `${f} is ${size} bytes`);
+  }
+});

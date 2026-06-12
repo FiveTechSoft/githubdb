@@ -4,7 +4,16 @@ import { join } from 'node:path';
 
 const DEFAULT_SHARD_THRESHOLD = 40 * 1024 * 1024; // 40 MB
 
+const NAME_RE = /^[A-Za-z_][A-Za-z0-9_-]*$/;
+
+function assertValidName(name) {
+  if (!NAME_RE.test(name)) {
+    throw new Error(`Invalid database name '${name}'`);
+  }
+}
+
 export async function loadDatabase(dataDir, name) {
+  assertValidName(name);
   const path = join(dataDir, `${name}.json`);
   let raw;
   try {
@@ -30,6 +39,7 @@ export async function loadDatabase(dataDir, name) {
 }
 
 export async function saveDatabase(dataDir, name, db, opts = {}) {
+  assertValidName(name);
   const threshold = opts.shardThreshold ?? DEFAULT_SHARD_THRESHOLD;
   const written = [];
 
@@ -52,11 +62,12 @@ export async function saveDatabase(dataDir, name, db, opts = {}) {
       throw new Error('Database row too large to fit in a single file');
     }
     const [tname, table] = candidates[0];
+    const envelope = Buffer.byteLength(JSON.stringify({ table: tname, rows: [] }));
     const rows = table.rows;
     table.rows = [];
     table.shards = [];
     let chunk = [];
-    let chunkSize = 40; // envelope overhead
+    let chunkSize = envelope;
     const flush = async () => {
       if (chunk.length === 0) return;
       shardIndex += 1;
@@ -66,7 +77,7 @@ export async function saveDatabase(dataDir, name, db, opts = {}) {
       shardFiles.push(file);
       written.push(file);
       chunk = [];
-      chunkSize = 40;
+      chunkSize = envelope;
     };
     for (const row of rows) {
       const rowSize = Buffer.byteLength(JSON.stringify(row)) + 1;
