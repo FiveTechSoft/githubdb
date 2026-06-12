@@ -1,3 +1,6 @@
 node_modules/
 .model-cache/
 .stress_ids.txt
+__pycache__/
+*.pyc
+.phpunit.result.cache
