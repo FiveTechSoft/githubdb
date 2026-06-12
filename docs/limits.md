@@ -13,10 +13,10 @@ Use the [fast read path](api.html#fast-reads-without-the-action) for anything in
 
 ## Concurrency and consistency
 
-- Queries against the **same database** run serially, enforced by a GitHub Actions concurrency group per database. Queued queries wait — they are never cancelled or lost.
-- Queries against **different databases** run in parallel.
+- All queries run as parallel workflow runs and **serialize through Git**: each run commits its changes and pushes; if the push conflicts with a concurrent query, the engine resets, pulls the fresh data, **re-executes the query**, and pushes again (up to 5 attempts with randomized backoff).
+- This guarantees no query is silently dropped. (GitHub Actions concurrency groups are deliberately *not* used: GitHub keeps at most one pending run per group and cancels the rest, which would lose queries.)
 - Each query's changes are committed atomically — base file and shards together, all or nothing.
-- If a push races with another commit, the engine pulls and re-executes, up to 3 attempts, then reports `ok: false`.
+- Under sustained heavy write contention a run can exhaust its 5 attempts and fail; the workflow run is marked failed and the query can be re-sent.
 - There are **no multi-query transactions**: each query is its own atomic unit.
 
 ## Throughput

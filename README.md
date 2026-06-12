@@ -130,10 +130,9 @@ This gives AI agents a free, versioned memory with sub-second retrieval and dura
 
 ## Concurrency and consistency
 
-- Queries against the **same database** run serially (GitHub Actions concurrency groups) — no commit conflicts, no lost updates. Queued queries wait; they are never cancelled.
-- Queries against **different databases** run in parallel.
+- Queries run as parallel workflow runs and **serialize through Git**: on a push conflict the engine pulls the fresh data, re-executes the query, and pushes again (up to 5 attempts with randomized backoff). No query is silently dropped.
 - All file changes from one query land in a single atomic commit.
-- On push races, the engine retries (pull + re-execute) up to 3 times.
+- Under sustained heavy write contention a run can exhaust its retries; the workflow run is marked failed and the query can simply be re-sent.
 
 ## Limitations (read before depending on it)
 

@@ -102,16 +102,17 @@ Errores siempre producen fichero de resultado: el cliente nunca se queda esperan
 
 ### Concurrencia
 
-El workflow declara:
+> **Revisado 2026-06-12 tras pruebas de estrés E2E.** El diseño original usaba un
+> `concurrency.group` por BD asumiendo que las queries encoladas esperaban. Falso:
+> GitHub mantiene como máximo 1 run en ejecución + 1 pendiente por grupo y **cancela**
+> el resto (3 de 5 INSERTs simultáneos se perdieron en la prueba). Se eliminó el grupo.
 
-```yaml
-concurrency:
-  group: githubdb-${{ github.event.client_payload.db }}
-```
-
-Queries sobre la misma BD se ejecutan en serie (sin conflictos de commit). Queries sobre BDs distintas pueden ejecutarse en paralelo. Sin `cancel-in-progress`: las queries encoladas esperan, no se cancelan.
-
-Si el push falla por carrera (otro commit entró antes), el motor reintenta con pull + re-ejecución hasta 3 veces antes de devolver error.
+Todas las queries se ejecutan como runs paralelos y se serializan vía Git: cada run
+commitea y hace push; si el push falla por carrera (otro commit entró antes), el motor
+hace reset, pull de los datos frescos, **re-ejecuta la query** y reintenta el push,
+hasta 5 intentos con backoff aleatorio. Ninguna query se descarta en silencio. Bajo
+contención extrema un run puede agotar los 5 intentos: el run queda marcado como
+fallido y la query puede reenviarse.
 
 ### Limpieza de resultados
 

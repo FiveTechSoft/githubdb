@@ -4,10 +4,10 @@ on:
   repository_dispatch:
     types: [query]
 
-# Queries on the same database run serially; different databases in parallel.
-concurrency:
-  group: githubdb-${{ github.event.client_payload.db }}
-
+# No concurrency group: GitHub cancels queued runs in a group (1 running + 1
+# pending max), which silently drops queries. Instead, runs execute in parallel
+# and serialize through git: on push conflict the engine re-executes against
+# freshly pulled data (see retry loop below).
 permissions:
   contents: write
 
@@ -41,7 +41,7 @@ jobs:
         run: |
           git config user.name "githubDB"
           git config user.email "githubdb@users.noreply.github.com"
-          for attempt in 1 2 3; do
+          for attempt in 1 2 3 4 5; do
             node engine/run-query.js
             git add data results
             if git diff --cached --quiet; then
@@ -53,7 +53,8 @@ jobs:
             fi
             echo "Push race detected (attempt $attempt); re-executing"
             git reset --hard HEAD~1
+            sleep $(( RANDOM % 5 + attempt ))
             git pull --rebase origin ${{ github.event.repository.default_branch }}
           done
-          echo "Failed after 3 attempts" >&2
+          echo "Failed after 5 attempts" >&2
           exit 1
