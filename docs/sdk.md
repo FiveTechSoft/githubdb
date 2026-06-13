@@ -1,6 +1,13 @@
+---
+title: SDKs
+layout: default
+parent: Home
+nav_order: 5
+---
+
 # SDKs — fast read path
 
-Official client SDKs for **JavaScript**, **Python** and **PHP**. They implement the [fast read path](vectors.html#fast-read-path-for-rag-sub-second-no-action): data is fetched directly from GitHub's raw CDN (sub-second, no Action involved), vectors are decoded client-side, and semantic search runs locally. A `query()` convenience for writes (dispatch + poll) is also included.
+Official client SDKs for **JavaScript**, **Python** and **PHP**. They implement the [fast read path]({% link vectors.md %}#fast-read-path-for-rag-sub-second-no-action): data is fetched directly from GitHub's raw CDN (sub-second, no Action involved), vectors are decoded client-side, and semantic search runs locally. A `query()` convenience for writes (dispatch + poll) is also included.
 
 All three SDKs share the same semantics:
 

@@ -1,6 +1,25 @@
 title: githubDB
 description: A SQL + vector database that lives entirely in a GitHub repository. Fork it, and you have your own free database.
-theme: jekyll-theme-cayman
-show_downloads: false
+remote_theme: just-the-docs/just-the-docs
+url: "https://fivetechsoft.github.io"
+baseurl: "/githubdb"
+color_scheme: dark
+search_enabled: true
+heading_anchors: true
+aux_links:
+  GitHub: https://github.com/FiveTechSoft/githubdb
+footer_content: 'Built by <a href="https://github.com/FiveTechSoft">FiveTech Software</a>. MIT License. &copy; 2026.'
+plugins:
+  - jekyll-remote-theme
+  - jekyll-sitemap
 exclude:
   - superpowers/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

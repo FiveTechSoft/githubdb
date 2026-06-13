@@ -1,3 +1,10 @@
+---
+title: Limits & concurrency
+layout: default
+parent: Home
+nav_order: 7
+---
+
 # Limits and concurrency
 
 githubDB trades latency for zero infrastructure. Know the envelope before depending on it.
@@ -9,7 +16,7 @@ githubDB trades latency for zero infrastructure. Know the envelope before depend
 | Write / query via Action | 10–30 s (workflow startup dominates) |
 | Read via raw CDN (fast path) | < 1 s |
 
-Use the [fast read path](api.html#fast-reads-without-the-action) for anything interactive; reserve Action queries for writes and occasional server-side SQL.
+Use the [fast read path]({% link api.md %}#fast-reads-without-the-action) for anything interactive; reserve Action queries for writes and occasional server-side SQL.
 
 ## Concurrency and consistency
 

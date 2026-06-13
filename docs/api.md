@@ -1,3 +1,10 @@
+---
+title: API reference
+layout: default
+parent: Home
+nav_order: 2
+---
+
 # API reference
 
 githubDB's API is GitHub's own REST API: queries go in through `repository_dispatch`, results come out through the raw file CDN. There is no githubDB server.
@@ -81,7 +88,7 @@ For read-only access you can skip the query API entirely and fetch the data file
 GET https://raw.githubusercontent.com/<OWNER>/githubdb/<BRANCH>/data/<db>.json
 ```
 
-This is a CDN read — sub-second, no Actions minutes, no write token needed (public repos need no token at all). Combine it with client-side filtering or vector similarity for fast RAG retrieval; see [Vector search](vectors.html).
+This is a CDN read — sub-second, no Actions minutes, no write token needed (public repos need no token at all). Combine it with client-side filtering or vector similarity for fast RAG retrieval; see [Vector search]({% link vectors.md %}).
 
 ## Rate limits
 

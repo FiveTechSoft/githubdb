@@ -1,3 +1,10 @@
+---
+title: SQL reference
+layout: default
+parent: Home
+nav_order: 3
+---
+
 # SQL reference
 
 The engine executes SQL with [alasql](https://github.com/alasql/alasql) over the JSON data files, extended with vector functions. One statement per query.
@@ -82,7 +89,7 @@ Parameters avoid SQL injection and quoting issues — always prefer them over st
 | `EUCLIDEAN(col, v)` | Euclidean distance (0 = identical) |
 | `EMBED(text)` | 384-dim embedding of `text`, computed with the built-in local model |
 
-`v` may be a named parameter (base64 float32 string or JSON number array) or an `EMBED(...)` call. See [Vector search](vectors.html) for the full picture.
+`v` may be a named parameter (base64 float32 string or JSON number array) or an `EMBED(...)` call. See [Vector search]({% link vectors.md %}) for the full picture.
 
 ```sql
 SELECT id, texto, COSINE_SIM(embedding, EMBED('unpaid invoice')) AS score

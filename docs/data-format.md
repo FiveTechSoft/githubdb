@@ -1,3 +1,10 @@
+---
+title: Data format
+layout: default
+parent: Home
+nav_order: 6
+---
+
 # Data format
 
 One database = one JSON file under `data/`. Files are plain, human-readable JSON — you can create and edit them by hand, through Git, or through SQL.

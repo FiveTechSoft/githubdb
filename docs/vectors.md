@@ -1,3 +1,10 @@
+---
+title: Vector search
+layout: default
+parent: Home
+nav_order: 4
+---
+
 # Vector search
 
 githubDB supports vector columns natively, with free automatic embeddings and SQL-composable similarity search. It is designed as a durable, versioned memory for AI agents and RAG applications.
