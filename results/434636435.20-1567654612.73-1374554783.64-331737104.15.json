@@ -1,0 +1,59 @@
+{
+ "ok": true,
+ "id": "434636435.20-1567654612.73-1374554783.64-331737104.15",
+ "rowCount": 9,
+ "columns": [
+  "id",
+  "name",
+  "email"
+ ],
+ "rows": [
+  [
+   1,
+   "Ana",
+   "ana@mail.com"
+  ],
+  [
+   2,
+   "Luis",
+   "luis@mail.com"
+  ],
+  [
+   11,
+   "Stress1",
+   "s1@test.com"
+  ],
+  [
+   15,
+   "Stress5",
+   "s5@test.com"
+  ],
+  [
+   24,
+   "Race4",
+   "r4@test.com"
+  ],
+  [
+   25,
+   "Race5",
+   "r5@test.com"
+  ],
+  [
+   21,
+   "Race1",
+   "r1@test.com"
+  ],
+  [
+   23,
+   "Race3",
+   "r3@test.com"
+  ],
+  [
+   22,
+   "Race2",
+   "r2@test.com"
+  ]
+ ],
+ "elapsedMs": 18,
+ "ts": "2026-06-13T07:51:45.191Z"
+}
