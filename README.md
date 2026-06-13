@@ -69,6 +69,11 @@ curl -s "https://raw.githubusercontent.com/YOU/githubdb/main/results/$ID.json"
 
 Ready-to-run client examples for several languages live in [`clients/`](clients/).
 
+A **Harbour / FiveWin** sample with full XBrowse GUI is available at
+[`samples/githubdb/`](https://github.com/FiveTechSoft/githubdb/tree/main/samples/githubdb)
+in the [FWH](https://github.com/FiveTechSoft/fwteam) samples tree — fast CDN reads
+and Action queries with a visual browse.
+
 ## SDKs
 
 Official SDKs for **JavaScript** (Node + browser), **Python** and **PHP** live in [`sdk/`](sdk/). They implement the fast read path — sub-second table reads from the raw CDN and local semantic search (`search('texto', limit: 5)`) with optional local embeddings — plus a `query()` write convenience. See the [SDK documentation](https://fivetechsoft.github.io/githubdb/sdk.html).
