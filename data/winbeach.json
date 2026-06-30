@@ -45,7 +45,7 @@
           253,
           "2026-06-01",
           "2026-09-15",
-          "2026-06-30T10:45:49.062Z"
+          "2026-06-30T10:51:48.960Z"
         ]
       ]
     },
@@ -4808,6 +4808,10 @@
         {
           "name": "attivo",
           "type": "BOOL"
+        },
+        {
+          "name": "password_hash",
+          "type": "TEXT"
         }
       ],
       "rows": [
@@ -4816,16 +4820,18 @@
           "admin",
           "admin@winbeach.it",
           "Amministratore",
-          "",
-          true
+          "2026-06-30T08:00:00",
+          true,
+          "34750549a7ff3b67f9f198f6f9b47d576b695862f493bdab66d1fb2ca885e960"
         ],
         [
           2,
           "reception",
           "cassa@winbeach.it",
           "Operatore",
-          "",
-          true
+          "2026-06-30T09:00:00",
+          true,
+          "139de5420069a8b3b8510a044edfbceb62b7a9fd84bdc3a57457eda42476b04c"
         ]
       ]
     },
