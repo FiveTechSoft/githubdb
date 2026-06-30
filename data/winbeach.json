@@ -8,11 +8,23 @@
         { "name": "cols", "type": "INT" },
         { "name": "walkway_col", "type": "INT" },
         { "name": "prossimo", "type": "INT" },
+        { "name": "stagione_inizio", "type": "TEXT" },
+        { "name": "stagione_fine", "type": "TEXT" },
         { "name": "updated_at", "type": "TEXT" }
       ],
-      "rows": [
-        [1, 14, 22, 11, 1, ""]
-      ]
+      "rows": [[1, 14, 22, 11, 1, "2026-06-01", "2026-09-15", ""]]
+    },
+    "azienda": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "ragione_sociale", "type": "TEXT" },
+        { "name": "piva", "type": "TEXT" },
+        { "name": "indirizzo", "type": "TEXT" },
+        { "name": "email", "type": "TEXT" },
+        { "name": "telefono", "type": "TEXT" },
+        { "name": "stagione", "type": "TEXT" }
+      ],
+      "rows": [[1, "Stabilimento Balneare S.r.l.", "IT12345678901", "Lungomare Europa, 1", "info@winbeach.it", "+39 080 1234567", "01/06 — 15/09"]]
     },
     "celle": {
       "columns": [
@@ -26,6 +38,69 @@
         { "name": "attivo", "type": "BOOL" }
       ],
       "rows": []
+    },
+    "elementi": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "codice", "type": "TEXT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "alquilabile", "type": "BOOL" },
+        { "name": "icona", "type": "TEXT" },
+        { "name": "colore", "type": "TEXT" },
+        { "name": "attivo", "type": "BOOL" }
+      ],
+      "rows": [
+        [1, "OMB", "Ombrellone", true, "☂", "#4a90c8", true],
+        [2, "HWA", "Hawaiana", true, "🏖", "#48bbb0", true],
+        [3, "CAB", "Cabina", true, "🏠", "#8b6914", true],
+        [4, "TEN", "Tenda", true, "⛺", "#e8a838", true],
+        [5, "PAS", "Pasarela", false, "═", "#8b6914", true]
+      ]
+    },
+    "settori": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "codice", "type": "TEXT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "postazioni", "type": "INT" },
+        { "name": "tassa", "type": "TEXT" },
+        { "name": "descrizione", "type": "TEXT" },
+        { "name": "attivo", "type": "BOOL" }
+      ],
+      "rows": [
+        [1, "A", "Prima fila", 40, "Premium", "Vista mare diretta", true],
+        [2, "B", "Centrale", 60, "Standard", "Zona principale", true],
+        [3, "C", "Piscina", 30, "Economy", "Vicino piscina", true]
+      ]
+    },
+    "listini": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "validita", "type": "TEXT" },
+        { "name": "settori", "type": "TEXT" },
+        { "name": "stato", "type": "TEXT" }
+      ],
+      "rows": [
+        [1, "Estivo 2026", "01/06 — 15/09", "A, B, C", "attivo"],
+        [2, "Weekend", "Sab-Dom", "A, B", "attivo"]
+      ]
+    },
+    "tariffe": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "tassa", "type": "TEXT" },
+        { "name": "giornaliero", "type": "FLOAT" },
+        { "name": "settimanale", "type": "FLOAT" },
+        { "name": "quindicinale", "type": "FLOAT" },
+        { "name": "mensile", "type": "FLOAT" },
+        { "name": "listino_id", "type": "INT" }
+      ],
+      "rows": [
+        [1, "A", 35, 210, 380, 650, 1],
+        [2, "B", 28, 170, 300, 520, 1],
+        [3, "C", 22, 130, 240, 400, 1]
+      ]
     },
     "clienti": {
       "columns": [
@@ -46,6 +121,207 @@
         { "name": "data_inizio", "type": "TEXT" },
         { "name": "data_fine", "type": "TEXT" },
         { "name": "stato", "type": "TEXT" },
+        { "name": "note", "type": "TEXT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "importo_pagato", "type": "FLOAT" },
+        { "name": "canale", "type": "TEXT" },
+        { "name": "stato_pagamento", "type": "TEXT" },
+        { "name": "ora_arrivo", "type": "TEXT" },
+        { "name": "check_in", "type": "BOOL" },
+        { "name": "check_out", "type": "BOOL" }
+      ],
+      "rows": []
+    },
+    "servizi": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "prezzo", "type": "FLOAT" },
+        { "name": "unita", "type": "TEXT" },
+        { "name": "icona", "type": "TEXT" },
+        { "name": "attivo", "type": "BOOL" }
+      ],
+      "rows": [
+        [1, "Lettino aggiuntivo", 8, "giorno", "🛏", true],
+        [2, "Sdraio", 5, "giorno", "🏖", true],
+        [3, "Parcheggio", 10, "giorno", "🅿", true]
+      ]
+    },
+    "movimenti_cassa": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "tipo", "type": "TEXT" },
+        { "name": "descrizione", "type": "TEXT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "metodo", "type": "TEXT" },
+        { "name": "prenotazione_id", "type": "INT" },
+        { "name": "operatore", "type": "TEXT" },
+        { "name": "note", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "log_sconti": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "operatore", "type": "TEXT" },
+        { "name": "cliente_id", "type": "INT" },
+        { "name": "prenotazione_id", "type": "INT" },
+        { "name": "sconto_pct", "type": "FLOAT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "motivo", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "log_cancellazioni": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "prenotazione_id", "type": "INT" },
+        { "name": "cliente_id", "type": "INT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "penale", "type": "FLOAT" },
+        { "name": "motivo", "type": "TEXT" },
+        { "name": "operatore", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "log_modifiche": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "prenotazione_id", "type": "INT" },
+        { "name": "cella_da", "type": "INT" },
+        { "name": "cella_a", "type": "INT" },
+        { "name": "operatore", "type": "TEXT" },
+        { "name": "motivo", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "contatori_albergo": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "albergo", "type": "TEXT" },
+        { "name": "codice", "type": "TEXT" },
+        { "name": "totale", "type": "INT" },
+        { "name": "utilizzato", "type": "INT" }
+      ],
+      "rows": [
+        [1, "Hotel Riviera", "OMB-2026", 200, 0],
+        [2, "Grand Beach", "OMB-2026", 200, 0]
+      ]
+    },
+    "voucher": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "codice", "type": "TEXT" },
+        { "name": "emessi", "type": "INT" },
+        { "name": "utilizzati", "type": "INT" },
+        { "name": "scadenza", "type": "TEXT" }
+      ],
+      "rows": [
+        [1, "SUMMER2026", 500, 0, "2026-09-15"],
+        [2, "WELCOME10", 200, 0, "2026-12-31"]
+      ]
+    },
+    "articoli": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "categoria", "type": "TEXT" },
+        { "name": "giacenza", "type": "INT" },
+        { "name": "scorta_min", "type": "INT" }
+      ],
+      "rows": [
+        [1, "Ombrellone standard", "Attrezzatura", 45, 20],
+        [2, "Sdraio", "Attrezzatura", 12, 30],
+        [3, "Teli mare", "Consumabile", 180, 50]
+      ]
+    },
+    "movimenti_magazzino": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "articolo_id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "tipo", "type": "TEXT" },
+        { "name": "quantita", "type": "INT" },
+        { "name": "note", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "utenti": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "username", "type": "TEXT" },
+        { "name": "email", "type": "TEXT" },
+        { "name": "ruolo", "type": "TEXT" },
+        { "name": "ultimo_accesso", "type": "TEXT" },
+        { "name": "attivo", "type": "BOOL" }
+      ],
+      "rows": [
+        [1, "admin", "admin@winbeach.it", "Amministratore", "", true],
+        [2, "reception", "cassa@winbeach.it", "Operatore", "", true]
+      ]
+    },
+    "capitaneria": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "voce", "type": "TEXT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "unita", "type": "TEXT" },
+        { "name": "note", "type": "TEXT" }
+      ],
+      "rows": [
+        [1, "Tassa di soggiorno", 2.5, "/persona/notte", "Obbligatoria"],
+        [2, "Concessione demaniale", 12, "% su incasso", "Annuale"]
+      ]
+    },
+    "esercizi": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "tipo", "type": "TEXT" },
+        { "name": "responsabile", "type": "TEXT" },
+        { "name": "attivo", "type": "BOOL" }
+      ],
+      "rows": [
+        [1, "Bar Centrale", "Bar", "Marco R.", true],
+        [2, "Chiosco Nord", "Ristoro", "Anna L.", true],
+        [3, "Noleggio", "Servizi", "Paolo B.", true]
+      ]
+    },
+    "pagamenti_stripe": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "cliente_id", "type": "INT" },
+        { "name": "prenotazione_id", "type": "INT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "metodo", "type": "TEXT" },
+        { "name": "stripe_id", "type": "TEXT" },
+        { "name": "stato", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "trasferimenti_stripe": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "importo", "type": "FLOAT" },
+        { "name": "conto", "type": "TEXT" },
+        { "name": "stripe_payout_id", "type": "TEXT" },
+        { "name": "stato", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "attivita": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "data", "type": "TEXT" },
+        { "name": "titolo", "type": "TEXT" },
+        { "name": "stato", "type": "TEXT" },
+        { "name": "assegnato", "type": "TEXT" },
         { "name": "note", "type": "TEXT" }
       ],
       "rows": []
