@@ -1,0 +1,54 @@
+{
+  "githubdb": 1,
+  "tables": {
+    "config": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "rows", "type": "INT" },
+        { "name": "cols", "type": "INT" },
+        { "name": "walkway_col", "type": "INT" },
+        { "name": "prossimo", "type": "INT" },
+        { "name": "updated_at", "type": "TEXT" }
+      ],
+      "rows": [
+        [1, 14, 22, 11, 1, ""]
+      ]
+    },
+    "celle": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "cella", "type": "INT" },
+        { "name": "x", "type": "INT" },
+        { "name": "y", "type": "INT" },
+        { "name": "elemento", "type": "TEXT" },
+        { "name": "desc", "type": "TEXT" },
+        { "name": "settore", "type": "TEXT" },
+        { "name": "attivo", "type": "BOOL" }
+      ],
+      "rows": []
+    },
+    "clienti": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "nome", "type": "TEXT" },
+        { "name": "cognome", "type": "TEXT" },
+        { "name": "email", "type": "TEXT" },
+        { "name": "telefono", "type": "TEXT" },
+        { "name": "note", "type": "TEXT" }
+      ],
+      "rows": []
+    },
+    "prenotazioni": {
+      "columns": [
+        { "name": "id", "type": "INT" },
+        { "name": "cliente_id", "type": "INT" },
+        { "name": "cella", "type": "INT" },
+        { "name": "data_inizio", "type": "TEXT" },
+        { "name": "data_fine", "type": "TEXT" },
+        { "name": "stato", "type": "TEXT" },
+        { "name": "note", "type": "TEXT" }
+      ],
+      "rows": []
+    }
+  }
+}
